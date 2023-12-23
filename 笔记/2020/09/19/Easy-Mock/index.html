@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hisashiburidane.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="国产软件,搜了很多资料好像外国人不是很在意 mock server 这个东西?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Easy Mock">
+<meta property="og:url" content="https://hisashiburidane.github.io/%E7%AC%94%E8%AE%B0/2020/09/19/Easy-Mock/index.html">
+<meta property="og:site_name" content="Hisashiburi">
+<meta property="og:description" content="国产软件,搜了很多资料好像外国人不是很在意 mock server 这个东西?">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-19T14:55:44.000Z">
+<meta property="article:modified_time" content="2023-12-23T11:54:09.605Z">
+<meta property="article:author" content="Hisashiburi">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hisashiburidane.github.io/%E7%AC%94%E8%AE%B0/2020/09/19/Easy-Mock/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Easy Mock | Hisashiburi</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hisashiburi</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">22</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">30</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hisashiburidane.github.io/%E7%AC%94%E8%AE%B0/2020/09/19/Easy-Mock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/hollow_knight.jpg">
+      <meta itemprop="name" content="Hisashiburi">
+      <meta itemprop="description" content="努力,奋斗">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hisashiburi">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Easy Mock
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-19 22:55:44" itemprop="dateCreated datePublished" datetime="2020-09-19T22:55:44+08:00">2020-09-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-12-23 19:54:09" itemprop="dateModified" datetime="2023-12-23T19:54:09+08:00">2023-12-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>国产软件,搜了很多资料好像外国人不是很在意 mock server 这个东西?</p>
+<span id="more"></span>
+<h2 id="依赖环境"><a class="markdownIt-Anchor" href="#依赖环境"></a> 依赖环境</h2>
+<p>小规模的应用,使用 docker 安装完全足够用了,可以参考<a href="/2020/09/15/CentOS%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/#docker" title="CentOS常见问题#docker">这里</a></p>
+<h3 id="mongodb"><a class="markdownIt-Anchor" href="#mongodb"></a> MongoDB</h3>
+<figure class="highlight shell"><figcaption><span>Docker安装MongoDB</span><span class="exturl" data-url="aHR0cHM6Ly9odWIuZG9ja2VyLmNvbS9fL21vbmdv" title="https://hub.docker.com/_/mongo">DockerHub/mongo<i class="fa fa-external-link"></i></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull mongo</span></span><br><span class="line">Using default tag: latest</span><br><span class="line">latest: Pulling from library/mongo</span><br><span class="line">5d9821c94847: Pull complete</span><br><span class="line">a610eae58dfc: Pull complete</span><br><span class="line">a40e0eb9f140: Pull complete</span><br><span class="line">3242ba6cef1f: Pull complete</span><br><span class="line">8ade7416f0cf: Pull complete</span><br><span class="line">cd8d2aab224e: Pull complete</span><br><span class="line">9d8c2ff7f392: Pull complete</span><br><span class="line">d29b99c4ab4c: Pull complete</span><br><span class="line">5d1ed7c1266e: Pull complete</span><br><span class="line">77f31d60b382: Pull complete</span><br><span class="line">e328c48077a2: Pull complete</span><br><span class="line">31085c577c4a: Pull complete</span><br><span class="line">Digest: sha256:ebcdb042054d9974c8c3160d761b0bdb39b55115448242de1a5161c124ddb0af</span><br><span class="line">Status: Downloaded newer image for mongo:latest</span><br><span class="line">docker.io/library/mongo:latest</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建并启动docker容器</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -itd --name mongo -p 27017:27017 mongo --auth</span></span><br><span class="line">46b83cc20eb4c7270cb961ea00a6ac0df6ffdc1ff0ac6921e3eef546e163eb46</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>创建用户</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -it mongo mongo admin</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个名为 root,密码为 p@ssw0rd 的用户。</span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"> db.createUser(&#123; user:<span class="string">&#x27;root&#x27;</span>,<span class="built_in">pwd</span>:<span class="string">&#x27;p@ssw0rd&#x27;</span>,roles:[ &#123; role:<span class="string">&#x27;userAdminAnyDatabase&#x27;</span>, db: <span class="string">&#x27;admin&#x27;</span>&#125;]&#125;);</span></span><br><span class="line">Successfully added user: &#123;</span><br><span class="line">&quot;user&quot; : &quot;root&quot;,</span><br><span class="line"> &quot;roles&quot; : [</span><br><span class="line">  &#123;</span><br><span class="line">   &quot;role&quot; : &quot;userAdminAnyDatabase&quot;,</span><br><span class="line">   &quot;db&quot; : &quot;admin&quot;</span><br><span class="line">  &#125;</span><br><span class="line"> ]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">尝试使用上面创建的用户信息进行连接。</span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">db.auth(<span class="string">&#x27;root&#x27;</span>, <span class="string">&#x27;p@ssw0rd&#x27;</span>)</span></span><br><span class="line">1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个名为 easymock，密码为 p@ssw0rd 的用户,具备easymock数据库的读写权限</span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">db.createUser(&#123; user:<span class="string">&#x27;easymock&#x27;</span>,<span class="built_in">pwd</span>:<span class="string">&#x27;p@ssw0rd&#x27;</span>,roles:[<span class="string">&quot;root&quot;</span>]&#125;);</span></span><br><span class="line">Successfully added user: &#123; &quot;user&quot; : &quot;easymock&quot;, &quot;roles&quot; : [ &quot;root&quot; ] &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="redis"><a class="markdownIt-Anchor" href="#redis"></a> Redis</h3>
+<figure class="highlight shell"><figcaption><span>Docker安装Redis</span><span class="exturl" data-url="aHR0cHM6Ly9odWIuZG9ja2VyLmNvbS9fL3JlZGlz" title="https://hub.docker.com/_/redis">DockerHub/redis<i class="fa fa-external-link"></i></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull redis</span></span><br><span class="line">Using default tag: latest</span><br><span class="line">latest: Pulling from library/redis</span><br><span class="line">d121f8d1c412: Pull complete</span><br><span class="line">2f9874741855: Pull complete</span><br><span class="line">d92da09ebfd4: Pull complete</span><br><span class="line">bdfa64b72752: Pull complete</span><br><span class="line">e748e6f663b9: Pull complete</span><br><span class="line">eb1c8b66e2a1: Pull complete</span><br><span class="line">Digest: sha256:1cfb205a988a9dae5f025c57b92e9643ec0e7ccff6e66bc639d8a5f95bba928c</span><br><span class="line">Status: Downloaded newer image for redis:latest</span><br><span class="line">docker.io/library/redis:latest</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -itd --name redis -p 6379:6379 redis</span></span><br><span class="line">997037310c17fb6109a42c3432fa910dc2e20ded8b863a9c572e022cc932f4cf</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>使用Redis-Cli登录</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -it redis /bin/bash</span></span><br><span class="line">root@997037310c17:/data# redis-cli</span><br><span class="line">127.0.0.1:6379&gt; hkeys all;</span><br><span class="line">(empty array)</span><br></pre></td></tr></table></figure>
+<h3 id="nodejs"><a class="markdownIt-Anchor" href="#nodejs"></a> nodejs</h3>
+<p>实际测试下来,EasyMock<code>不支持10.x和12.x的node环境</code>,因此需要安装<a target="_blank" rel="noopener" href="https://nodejs.org/dist/latest-v8.x/"><code>8.x</code></a></p>
+<figure class="highlight shell"><figcaption><span>安装NodeJS</span><span class="exturl" data-url="aHR0cHM6Ly9ub2RlanMub3JnL2Rpc3QvbGF0ZXN0LXY4Lngv" title="https://nodejs.org/dist/latest-v8.x/">nodejs-v8.x-latest<i class="fa fa-external-link"></i></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载压缩包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://nodejs.org/dist/latest-v8.x/node-v8.17.0-linux-x64.tar.xz</span></span><br><span class="line">--2020-09-20 07:48:29--  https://nodejs.org/dist/latest-v8.x/node-v8.17.0-linux-x64.tar.xz</span><br><span class="line">Resolving nodejs.org (nodejs.org)... 104.20.22.46, 104.20.23.46, 2606:4700:10::6814:172e, ...</span><br><span class="line">Connecting to nodejs.org (nodejs.org)|104.20.22.46|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: 11820040 (11M) [application/x-xz]</span><br><span class="line">Saving to: &#x27;node-v8.17.0-linux-x64.tar.xz&#x27;</span><br><span class="line"></span><br><span class="line">node-v8.17.0-linux-x64.tar.xz          100%[=========================================================================&gt;]  11.27M  77.9KB/s    in 78s</span><br><span class="line"></span><br><span class="line">2020-09-20 07:49:48 (148 KB/s) - &#x27;node-v8.17.0-linux-x64.tar.xz&#x27; saved [11820040/11820040]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解压</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">xz -d ./node-v8.17.0-linux-x64.tar.xz &amp;&amp; tar -xvf ./node-v8.17.0-linux-x64.tar</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更改路径</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> ./node-v8.17.0-linux-x64 <span class="variable">$HOME</span>/deployment/nodejs</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">写入环境变量</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span>&gt;&gt;<span class="variable">$HOME</span>/.bash_profile&lt;&lt;<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">NODE ENV</span></span></span><br><span class="line">export NODEPATH=$HOME/deployment/nodejs</span><br><span class="line">export PATH=\$PATH:$NODEPATH/bin</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">刷新环境变量</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">source $HOME/.bash_profile</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">node --version</span></span></span><br><span class="line">v8.17.0</span><br></pre></td></tr></table></figure>
+<h2 id="安装-easymock"><a class="markdownIt-Anchor" href="#安装-easymock"></a> 安装 EasyMock</h2>
+<figure class="highlight shell"><figcaption><span>安装EasyMock</span><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Vhc3ktbW9jay9lYXN5LW1vY2s=" title="https://github.com/easy-mock/easy-mock">EasyMock<i class="fa fa-external-link"></i></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/easy-mock/easy-mock.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> easy-mock &amp;&amp; npm install</span></span><br><span class="line">npm WARN ajv-keywords@2.1.1 requires a peer of ajv@^5.0.0 but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN easy-mock@1.6.0 No repository field.</span><br><span class="line">npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.1.3 (node_modules/fsevents):</span><br><span class="line">npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.1.3: wanted &#123;&quot;os&quot;:&quot;darwin&quot;,&quot;arch&quot;:&quot;any&quot;&#125; (current: &#123;&quot;os&quot;:&quot;linux&quot;,&quot;arch&quot;:&quot;x64&quot;&#125;)</span><br><span class="line"></span><br><span class="line">audited 1820 packages in 18.413s</span><br><span class="line">found 1850 vulnerabilities (928 low, 140 moderate, 780 high, 2 critical)</span><br><span class="line">  run `npm audit fix` to fix them, or `npm audit` for details</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><figcaption><span>修改配置文件</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">7300</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.0.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;pageSize&quot;</span><span class="punctuation">:</span> <span class="number">30</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;proxy&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// &quot;db&quot;: &quot;mongodb://admin:&#x27;p@ssw0rd&#x27;@localhost:27017/easy-mock&quot;,</span></span><br><span class="line">  <span class="attr">&quot;db&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mongodb://localhost/easy-mock&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;unsplashClientId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;redis&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;keyPrefix&quot;</span><span class="punctuation">:</span> <span class="string">&quot;[Easy Mock]&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">6379</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;host&quot;</span><span class="punctuation">:</span> <span class="string">&quot;localhost&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;db&quot;</span><span class="punctuation">:</span> <span class="number">0</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;blackList&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;projects&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="comment">// projectId，例：&quot;5a4495e16ef711102113e500&quot;</span></span><br><span class="line">    <span class="attr">&quot;ips&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span> <span class="comment">// ip，例：&quot;127.0.0.1&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;rateLimit&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// https://github.com/koajs/ratelimit</span></span><br><span class="line">    <span class="attr">&quot;max&quot;</span><span class="punctuation">:</span> <span class="number">1000</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;duration&quot;</span><span class="punctuation">:</span> <span class="number">1000</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;jwt&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;expire&quot;</span><span class="punctuation">:</span> <span class="string">&quot;14 days&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;secret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shared-secret&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upload&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;types&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;.jpg&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.jpeg&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.png&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.gif&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.json&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.yml&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.yaml&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">5242880</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;dir&quot;</span><span class="punctuation">:</span> <span class="string">&quot;../public/upload&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;expire&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;types&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;.json&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.yml&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.yaml&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;day&quot;</span><span class="punctuation">:</span> <span class="number">-1</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ldap&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="comment">// 设置 server 代表启用 LDAP 登录。例：&quot;ldap://localhost:389&quot; 或 &quot;ldaps://localhost:389&quot;（使用 SSL）</span></span><br><span class="line">    <span class="attr">&quot;bindDN&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="comment">// 用户名，例：&quot;cn=admin,dc=example,dc=com&quot;</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;filter&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;base&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="comment">// 查询用户的路径，例：&quot;dc=example,dc=com&quot;</span></span><br><span class="line">      <span class="attr">&quot;attributeName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span> <span class="comment">// 查询字段，例：&quot;mail&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;fe&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;copyright&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;storageNamespace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;easy-mock_&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;timeout&quot;</span><span class="punctuation">:</span> <span class="number">25000</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;publicPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/dist/&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>运行</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">全局安装pm2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g --registry=http://registry.npm.taobao.org/ pm2</span></span><br><span class="line">/home/centos/deployment/nodejs/bin/pm2 -&gt; /home/centos/deployment/nodejs/lib/node_modules/pm2/bin/pm2</span><br><span class="line">/home/centos/deployment/nodejs/bin/pm2-docker -&gt; /home/centos/deployment/nodejs/lib/node_modules/pm2/bin/pm2-docker</span><br><span class="line">/home/centos/deployment/nodejs/bin/pm2-dev -&gt; /home/centos/deployment/nodejs/lib/node_modules/pm2/bin/pm2-dev</span><br><span class="line">/home/centos/deployment/nodejs/bin/pm2-runtime -&gt; /home/centos/deployment/nodejs/lib/node_modules/pm2/bin/pm2-runtime</span><br><span class="line">npm WARN notsup Unsupported engine for mkdirp@1.0.4: wanted: &#123;&quot;node&quot;:&quot;&gt;=10&quot;&#125; (current: &#123;&quot;node&quot;:&quot;8.17.0&quot;,&quot;npm&quot;:&quot;6.13.4&quot;&#125;)</span><br><span class="line">npm WARN notsup Not compatible with your version of node/npm: mkdirp@1.0.4</span><br><span class="line">npm WARN notsup Unsupported engine for semver@7.3.2: wanted: &#123;&quot;node&quot;:&quot;&gt;=10&quot;&#125; (current: &#123;&quot;node&quot;:&quot;8.17.0&quot;,&quot;npm&quot;:&quot;6.13.4&quot;&#125;)</span><br><span class="line">npm WARN notsup Not compatible with your version of node/npm: semver@7.3.2</span><br><span class="line">npm WARN notsup Unsupported engine for semver@7.2.3: wanted: &#123;&quot;node&quot;:&quot;&gt;=10&quot;&#125; (current: &#123;&quot;node&quot;:&quot;8.17.0&quot;,&quot;npm&quot;:&quot;6.13.4&quot;&#125;)</span><br><span class="line">npm WARN notsup Not compatible with your version of node/npm: semver@7.2.3</span><br><span class="line">npm WARN ws@7.2.5 requires a peer of bufferutil@^4.0.1 but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN ws@7.2.5 requires a peer of utf-8-validate@^5.0.2 but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.1.3 (node_modules/pm2/node_modules/fsevents):</span><br><span class="line">npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.1.3: wanted &#123;&quot;os&quot;:&quot;darwin&quot;,&quot;arch&quot;:&quot;any&quot;&#125; (current: &#123;&quot;os&quot;:&quot;linux&quot;,&quot;arch&quot;:&quot;x64&quot;&#125;)</span><br><span class="line"></span><br><span class="line">+ pm2@4.4.1</span><br><span class="line">added 186 packages from 191 contributors in 16.098s</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm run build</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">NODE_ENV=production pm2 start app.js</span></span><br></pre></td></tr></table></figure>
+<a href="/%E7%AC%94%E8%AE%B0/2020/09/15/CentOS%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" title="Docker的安装">Docker的安装</a>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/%E7%AC%94%E8%AE%B0/2020/09/15/CentOS%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" rel="next" title="CentOS常见问题">
+      CentOS常见问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text"> 依赖环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb"><span class="nav-number">1.1.</span> <span class="nav-text"> MongoDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis"><span class="nav-number">1.2.</span> <span class="nav-text"> Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nodejs"><span class="nav-number">1.3.</span> <span class="nav-text"> nodejs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-easymock"><span class="nav-number">2.</span> <span class="nav-text"> 安装 EasyMock</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Hisashiburi"
+      src="/images/hollow_knight.jpg">
+  <p class="site-author-name" itemprop="name">Hisashiburi</p>
+  <div class="site-description" itemprop="description">努力,奋斗</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hpc2FzaGlidXJpZGFuZQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hisashiburidane"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmh5ZHJhdW5pY29ybkBnbWFpbC5jb20=" title="E-Mail → mailto:hydraunicorn@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9jaGF0Lm9wZW5haS5jb20=" title="https:&#x2F;&#x2F;chat.openai.com">ChatGPT</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cDovL2thaW1pbmdoZS5jb20v" title="http:&#x2F;&#x2F;kaiminghe.com&#x2F;">真·大神</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; some day – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-battery-1"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hisashiburidane</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">114k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:22</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.14.0/lozad.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script data-pjax>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script data-pjax>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://hisashiburidane.github.io/%E7%AC%94%E8%AE%B0/2020/09/19/Easy-Mock/";
+    this.page.identifier = "/笔记/2020/09/19/Easy-Mock/";
+    this.page.title = "Easy Mock";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://sayonara-l.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+    </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"https://cdn.jsdelivr.net/npm/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json"},"display":{"superSample":2,"position":"right","hOffset":0,"vOffset":0},"dialog":{"enable":true,"hitokoto":true},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.7,"opacityOnHover":0.2},"log":false});</script></body>
+</html>
